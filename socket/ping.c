@@ -47,7 +47,7 @@ unsigned short cal_chksum(unsigned short *addr,int len)
         unsigned short *w=addr;
         unsigned short answer=0;
 		
-/*把ICMP报头二进制数据以2字节为单位累加起来*/
+		/*把ICMP报头二进制数据以2字节为单位累加起来*/
         while(nleft>1)
         {       sum+=*w++;
                 nleft-=2;
