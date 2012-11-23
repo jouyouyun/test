@@ -42,20 +42,19 @@ int read_file( char *fname )
 	size = (off_t) buf.st_size;
 	len = (off_t) ( buf.st_size / THRD_NUM );
 
-	printf( "size: %ld\tlen: %ld\n", (long)size, (long)len );
+	printf( "size: %ld\tlen: %ld\n\n", (long)size, (long)len );
 	/* 设置属性： 独立线程 */
 	//pthread_attr_init( &attr_detach );
 	//pthread_attr_setdetachstate( &attr_detach, PTHREAD_CREATE_DETACHED);
 
 	for ( i = 0; i < THRD_NUM; i++ ) {
+		memset( &args[i], 0, sizeof(ARGS) );
 		args[i].start = i * len;
 		if ( i == THRD_NUM - 1 ) {
 			args[i].len = size - args[i].start;
 		} else {
 			args[i].len = len;
 		}
-		memset( args[i].buffer, 0, MAX_BUF_SIZE );
-		memset( args[i].path, 0, PATH_LEN );
 		strcpy( args[i].path, fname );
 
 		printf( "start: %ld\tend: %ld\n", (long)args[i].start, (long)args[i].len );
@@ -66,6 +65,10 @@ int read_file( char *fname )
 				pthread_cancel( thrds[i] );
 			}
 			return -1;
+		}
+
+		if ( i == 0 ) {
+			sleep(1);
 		}
 	}
 
