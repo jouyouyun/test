@@ -57,7 +57,7 @@ int read_file( char *fname )
 		}
 		strcpy( args[i].path, fname );
 
-		printf( "start: %ld\tend: %ld\n", (long)args[i].start, (long)args[i].len );
+		printf( "***start: %ld\tend: %ld***\n", (long)args[i].start, (long)args[i].len );
 		ret = pthread_create( &thrds[i], 0, thrd_read, &args[i] );
 		if ( ret != 0 ) {
 			fprintf( stderr, "create thrd %d err: %s\n", i, strerror(errno) );
@@ -132,8 +132,11 @@ void *thrd_read( void *arg )
 
 int write_file( ARGS *args )
 {
+	int ret;
 	int len;
+	//int fd;
 	FILE *fp;
+	//struct flock lock;
 
 	if ( args == NULL ) {
 		fprintf( stderr, "write_file arguments err\n" );
@@ -150,15 +153,40 @@ int write_file( ARGS *args )
 		return -1;
 	}
 
+	/* fcntl wrlock */
+	/*
+	memset( &lock, 0, sizeof(struct flock) );
+	lock.l_type   = F_WRLCK;
+	lock.l_whence = SEEK_SET;
+	lock.l_start  = args->start;
+	lock.l_len    = args->read_len;
+
+	fd = fileno(fp);
+	fcntl( fd, F_SETLKW, &lock );
+	*/
 	//printf( "write_file: %ld\n", (long)args->start );
-	fseek( fp, args->start, SEEK_SET );
+	ret = fseek( fp, args->start, SEEK_SET );
+	if ( ret == EINVAL ) {
+		fprintf( stderr, "fseek EINVAL: %s\n", strerror(errno) );
+		return -1;
+	} else if ( ret == -1 ) {
+		fprintf( stderr, "fseek err: %s\n", strerror(errno) );
+		return -1;
+	}
+	fprintf( stdout, "write start: %d\tstart: %d\n", ftell(fp), args->start );
 	len = fwrite( args->buffer, sizeof(char), args->read_len, fp );
 	if ( len == -1 ) {
 		fprintf( stderr, "write err: %s\n", strerror(errno) );
 		fclose(fp);
 		return -1;
 	}
+	fprintf( stdout, "write end: %d\tstart: %d\n\n", ftell(fp), args->start );
 
+	/*
+	lock.l_type = F_UNLCK;
+	fcntl( fd, F_SETLKW, &lock );
+	close(fd);
+	*/
 	fclose(fp);
 	return 0;
 }
