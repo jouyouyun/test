@@ -4,6 +4,8 @@
 
 #include "my_sock.h"
 
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
 int main( int argc, char *argv[] )
 {
 	if ( argc != 2 ) {
@@ -118,9 +120,11 @@ void *thrd_read( void *arg )
 		}
 
 		args->read_len = len;
+		pthread_mutex_lock( &mutex );
 		if ( write_file( args ) == -1 ) {
 			break;
 		}
+		pthread_mutex_unlock( &mutex );
 
 		args->start += len;
 		args->len -= len;
