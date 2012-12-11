@@ -20,6 +20,6 @@ ${PROG_NAME} : ${OBJS}
 	${CC} ${LDFLAG} $^ -o $@
 
 clean :
-	rm *.o ${PROG_NAME}
+	rm -rf *.o ${PROG_NAME}
 
 rebuild : clean all
