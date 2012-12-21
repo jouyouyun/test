@@ -1,4 +1,6 @@
 CC = gcc
+#mingw32
+#CC = i486-mingw32-gcc
 
 LUCY  = Lucy
 PETER = Peter

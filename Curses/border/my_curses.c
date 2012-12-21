@@ -36,3 +36,44 @@ void init_curses()
 	/* 将做清除萤幕的工作 */
 	refresh();
 }
+
+int draw_role( int row, int col )
+{
+	if ( col <= 0 || col >= bomb_num ) {
+		fprintf( stderr, "draw_border arguments err\n" );
+		return -1;
+	}
+
+	mvaddch( row, col, '^');
+	refresh();
+
+	return 0;
+}
+
+int draw_bomb( int row, int col )
+{
+	if ( col <= 0 || col >= bomb_num ) {
+		fprintf( stderr, "draw_border arguments err\n" );
+		return -1;
+	}
+
+	mvaddch( row, col, '&');
+	refresh();
+
+	return 0;
+}
+
+int clear_ch( int row, int col )
+{
+	/*
+	if ( row <= 0 || col <= 0 || row >= COLS - 1 || col >= LINES - 1 ) {
+		fprintf( stderr, "draw_border arguments err\n" );
+		return -1;
+	}
+	*/
+
+	mvaddch( row, col, ' ');
+	refresh();
+
+	return 0;
+}
